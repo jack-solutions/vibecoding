@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h5 class="mb-4">Results for "{{ query }}"</h5>
+
+        {% for video in videos %}
+        <div class="horizontal-card" onclick="window.location.href='/watch/{{ video.video_id }}'">
+            <img src="/thumbnail/{{ video.thumbnail }}" class="video-thumbnail" alt="...">
+            <div class="video-info">
+                <h5 class="video-title">{{ video.title }}</h5>
+                <p class="mb-1 text-muted" style="font-size:0.8rem;">{{ video.views }} views • {{
+                    video.upload_date.strftime('%Y-%m-%d') }}</p>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="avatar-placeholder" style="width:24px;height:24px;"></div>
+                    <small class="text-muted">{{ video.channel.name }}</small>
+                </div>
+                <p class="video-desc">{{ video.description }}</p>
+            </div>
+        </div>
+        {% else %}
+        <p>No results found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="chip-container">
+    <a href="#" class="chip active">All</a>
+    <a href="#" class="chip">Gaming</a>
+    <a href="#" class="chip">Music</a>
+    <a href="#" class="chip">Live</a>
+    <a href="#" class="chip">Mixes</a>
+    <a href="#" class="chip">Python</a>
+    <a href="#" class="chip">Flask</a>
+    <a href="#" class="chip">Web Development</a>
+</div>
+
+<div class="video-grid">
+    {% for video in videos %}
+    <div class="video-card" onclick="window.location.href='/watch/{{ video.video_id }}'">
+        <div class="video-thumbnail-container">
+            <img src="/thumbnail/{{ video.thumbnail }}" class="video-thumbnail" alt="...">
+            <span class="duration-pill">12:34</span>
+        </div>
+        <div class="video-info mt-3">
+            <div class="avatar-placeholder"></div>
+            <div class="video-meta">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="video-title" title="{{ video.title }}">{{ video.title }}</h5>
+                    <i class="bi bi-three-dots-vertical ms-2" style="font-size: 1.1rem; color: #0f0f0f;"></i>
+                </div>
+                <p class="channel-name">{{ video.channel.name }} <i class="bi bi-check-circle-fill text-muted"
+                        style="font-size:10px;"></i></p>
+                <p class="view-count">{{ video.views }} views • 2 hours ago</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>No videos uploaded yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

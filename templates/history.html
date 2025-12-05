@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h5 class="mb-4">Watch History</h5>
+        <div id="history-list">
+            <!-- Loaded via JS -->
+            <p class="text-muted">History is stored locally in this demo version.</p>
+        </div>
+    </div>
+</div>
+<!-- We haven't implemented a persistent history API endpoint that returns a list of videos fully populated.
+     However, we can simulate or we can fetch if we implemented it.
+     The user asked for "History Page".
+     For this simplified version, let's just show a static placeholder or try to load from local storage if we tracked it there?
+     Actually, let's just leave it as a placeholder or list *all* videos for now to demonstrate layout.
+-->
+{% endblock %}

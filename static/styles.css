@@ -1,0 +1,431 @@
+:root {
+    --yt-red: #cc0000;
+    --yt-black: #0f0f0f;
+    --yt-white: #ffffff;
+    --yt-gray: #f2f2f2;
+    --yt-gray-dark: #606060;
+    --yt-border: #e5e5e5;
+    --yt-hover: #e5e5e5;
+}
+
+body {
+    background-color: #fff;
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #0f0f0f;
+    margin-top: 56px;
+    /* Height of navbar */
+}
+
+/* Navbar */
+.navbar {
+    background-color: white !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0 16px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    color: black !important;
+    font-size: 1.1rem;
+    letter-spacing: -0.5px;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.search-bar {
+    display: flex;
+    flex: 1;
+    max-width: 640px;
+    margin: 0;
+}
+
+.search-bar input {
+    border-radius: 40px 0 0 40px;
+    border: 1px solid #ccc;
+    padding: 0 16px;
+    height: 40px;
+    box-shadow: inset 0 1px 2px #eee;
+    font-size: 16px;
+}
+
+.search-bar input:focus {
+    border-color: #1c62b9;
+    box-shadow: inset 0 1px 2px #eee;
+}
+
+.search-bar button {
+    border-radius: 0 40px 40px 0;
+    border: 1px solid #d3d3d3;
+    border-left: none;
+    background-color: #f8f8f8;
+    height: 40px;
+    padding: 0 20px;
+    width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    background: white;
+    padding-top: 12px;
+    overflow-y: auto;
+    z-index: 900;
+    padding-right: 12px;
+}
+
+/* Scrollbar for sidebar hover */
+.sidebar:hover::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 0px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 40px;
+    color: #0f0f0f;
+    text-decoration: none;
+    border-radius: 10px;
+    margin: 0 12px;
+    font-size: 0.9rem;
+}
+
+.sidebar-link span {
+    margin-left: 24px;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-link:hover {
+    background-color: var(--yt-hover);
+    color: #0f0f0f;
+}
+
+.sidebar-link.active {
+    background-color: var(--yt-hover);
+    font-weight: 500;
+}
+
+.sidebar-link i {
+    font-size: 1.2rem;
+    min-width: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 240px;
+    padding: 24px;
+}
+
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 72px;
+        /* Mini sidebar */
+        padding-right: 0;
+    }
+
+    .sidebar-link {
+        flex-direction: column;
+        height: 74px;
+        justify-content: center;
+        margin: 0 4px;
+        padding: 0;
+        gap: 6px;
+    }
+
+    .sidebar-link span {
+        margin-left: 0;
+        font-size: 10px;
+    }
+
+    .main-content {
+        margin-left: 72px;
+    }
+
+    .sidebar hr,
+    .sidebar .px-3 {
+        display: none;
+        /* Hide headings/separators/You section in mini mode */
+    }
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    row-gap: 40px;
+}
+
+.video-card {
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+}
+
+.video-thumbnail-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    background-color: #ccc;
+    transition: border-radius 0s;
+    /* No animation on border radius */
+}
+
+/* Hover effects (optional, playing on hover is hard without JS, but we can remove radius) */
+.video-card:hover .video-thumbnail {
+    border-radius: 0;
+    transition-delay: 0.2s;
+    /* Delay before 'expanding' */
+}
+
+.duration-pill {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+
+.video-info {
+    display: flex;
+    gap: 12px;
+}
+
+.avatar-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ccc;
+    flex-shrink: 0;
+}
+
+.video-meta {
+    flex: 1;
+}
+
+.video-title {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.3rem;
+    margin-bottom: 4px;
+    color: #0f0f0f;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.channel-name,
+.view-count {
+    color: #606060;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Watch Page */
+.watch-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+    padding-top: 0;
+}
+
+.large-player {
+    flex: 1;
+}
+
+.related-bar {
+    width: 400px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 1000px) {
+    .watch-container {
+        flex-direction: column;
+    }
+
+    .related-bar {
+        width: 100%;
+    }
+
+    .sidebar {
+        display: none;
+        /* Should be a drawer on mobile but easiest to hide */
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.btn-subscribe {
+    background-color: #0f0f0f;
+    color: white;
+    border-radius: 18px;
+    padding: 0 16px;
+    font-weight: 500;
+    border: none;
+    height: 36px;
+}
+
+.btn-subscribe.subscribed {
+    background-color: var(--yt-gray);
+    color: #0f0f0f;
+}
+
+.btn-like {
+    background-color: var(--yt-gray);
+    border-radius: 18px;
+    padding: 0 16px;
+    height: 36px;
+    border: none;
+    font-weight: 500;
+    color: #0f0f0f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-like:hover,
+.btn-subscribe:hover {
+    filter: brightness(0.9);
+}
+
+/* Horizontal Card (Search/History) */
+.horizontal-card {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    cursor: pointer;
+}
+
+.horizontal-card .video-thumbnail {
+    width: 360px;
+    height: 202px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .horizontal-card {
+        flex-direction: column;
+    }
+
+    .horizontal-card .video-thumbnail {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.horizontal-card .video-info {
+    padding-top: 4px;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.horizontal-card .video-title {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.horizontal-card .video-desc {
+    font-size: 0.8rem;
+    color: #606060;
+    margin-top: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Category Chips */
+.chip-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 12px 0 24px 0;
+    position: sticky;
+    top: 56px;
+    background: white;
+    z-index: 800;
+    margin-bottom: -12px;
+    /* Pull grid up slightly */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.chip-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.chip {
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 6px 12px;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #0f0f0f;
+    text-decoration: none;
+}
+
+.chip:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #0f0f0f;
+}
+
+.chip.active {
+    background-color: #0f0f0f;
+    color: white;
+    border-color: #0f0f0f;
+}

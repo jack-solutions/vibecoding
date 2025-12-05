@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <h2 id="channel-name">Loading...</h2>
+                <p id="channel-desc"></p>
+                <p><span id="sub-count">0</span> Subscribers</p>
+                <button id="sub-btn" class="btn btn-danger" onclick="toggleSubscribe()">Subscribe</button>
+            </div>
+        </div>
+
+        <h3>Videos</h3>
+        <div class="row" id="video-list">
+            <!-- Videos loaded via JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const creatorId = '{{ creator_id }}';
+    let isSubscribed = false;
+
+    async function loadChannel() {
+        const res = await fetch('/channel/' + creatorId);
+        if (!res.ok) { document.getElementById('channel-name').innerText = 'Channel not found'; return; }
+
+        const data = await res.json();
+        document.getElementById('channel-name').innerText = data.name;
+        document.getElementById('channel-desc').innerText = data.description;
+        document.getElementById('sub-count').innerText = data.subscriber_count;
+
+        // Check subscription status (requires checking user subs)
+        checkSubscriptionStatus();
+
+        // Load videos
+        // The channel object has video IDs. We need to fetch details for them or just link them.
+        // For simplicity, we just list the IDs or fetch details if we had a bulk endpoint.
+        // In our simplified backend, channel['videos'] is just a list of IDs.
+        // We can't fetch details easily without /video/<id> loop which is slow.
+        // Optimization: Add detailed video info to channel response or use search.
+        // For now, let's just show text links or fetching one by one.
+
+        const list = document.getElementById('video-list');
+        for (const vid of data.videos) {
+            // Fetch minimal info (or use a bulk endpoint if we had one)
+            const vres = await fetch('/video/' + vid);
+            const vdata = await vres.json();
+            const col = document.createElement('div');
+            col.className = 'col-md-3';
+            col.innerHTML = `
+            <div class="card video-card" onclick="window.location.href='/watch/${vdata.video_id}'">
+                <img src="/thumbnail/${vdata.thumbnail}" class="video-thumbnail card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">${vdata.title}</h5>
+                    <p class="card-text text-muted">${vdata.views} views</p>
+                </div>
+            </div>
+        `;
+            list.appendChild(col);
+        }
+    }
+
+    async function checkSubscriptionStatus() {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const res = await fetch('/subscriptions', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        isSubscribed = data.some(sub => sub.channel_id === creatorId);
+        updateSubBtn();
+    }
+
+    function updateSubBtn() {
+        const btn = document.getElementById('sub-btn');
+        if (isSubscribed) {
+            btn.innerText = 'Unsubscribe';
+            btn.classList.replace('btn-danger', 'btn-secondary');
+        } else {
+            btn.innerText = 'Subscribe';
+            btn.classList.replace('btn-secondary', 'btn-danger');
+        }
+    }
+
+    async function toggleSubscribe() {
+        const token = localStorage.getItem('token');
+        if (!token) { alert('Please login'); return; }
+
+        const res = await fetch('/subscribe/' + creatorId, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (res.ok) {
+            isSubscribed = !isSubscribed;
+            updateSubBtn();
+            // Refresh count (dumb increment/decrement for UI)
+            let count = parseInt(document.getElementById('sub-count').innerText);
+            count = isSubscribed ? count + 1 : count - 1;
+            document.getElementById('sub-count').innerText = count;
+        } else {
+            alert('Error');
+        }
+    }
+
+    loadChannel();
+</script>
+{% endblock %}
