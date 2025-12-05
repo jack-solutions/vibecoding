@@ -1,0 +1,15 @@
+.upload-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.upload-container h1 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.upload-form {
+    background: var(--bg-secondary);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+}

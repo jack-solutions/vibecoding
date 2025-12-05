@@ -1,0 +1,13 @@
+.search-page {
+    padding: var(--spacing-xl);
+}
+
+.search-page h1 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.no-results {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+}

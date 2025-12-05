@@ -1,0 +1,32 @@
+.yt-subscribe-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Roboto', sans-serif;
+    background: var(--yt-spec-brand-button-background);
+    color: white;
+}
+
+.yt-subscribe-button:hover {
+    background: #b00000;
+}
+
+.yt-subscribe-button.subscribed {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--yt-spec-text-secondary);
+}
+
+.yt-subscribe-button.subscribed:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.yt-subscribe-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

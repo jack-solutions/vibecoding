@@ -1,0 +1,75 @@
+.admin-dashboard {
+    padding: var(--spacing-xl);
+}
+
+.admin-dashboard h1 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.admin-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.admin-section h2 {
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-table {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--bg-tertiary);
+}
+
+th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+td {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.role-badge {
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--success);
+}
+
+.status-badge.blocked {
+    background: rgba(255, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}

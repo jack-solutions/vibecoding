@@ -1,0 +1,93 @@
+.yt-comment-box {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.yt-comment-box-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #cc0000 0%, #ff0000 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.yt-comment-box-form {
+    flex: 1;
+}
+
+.yt-comment-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 0;
+    color: var(--yt-spec-text-primary);
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    transition: border-color 0.2s ease;
+}
+
+.yt-comment-input::placeholder {
+    color: var(--yt-spec-text-secondary);
+}
+
+.yt-comment-input:focus {
+    outline: none;
+    border-bottom-color: var(--yt-spec-text-primary);
+}
+
+.yt-comment-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.yt-comment-cancel,
+.yt-comment-submit {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Roboto', sans-serif;
+}
+
+.yt-comment-cancel {
+    background: transparent;
+    color: var(--yt-spec-text-primary);
+}
+
+.yt-comment-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.yt-comment-submit {
+    background: var(--yt-spec-call-to-action);
+    color: var(--yt-spec-base-background);
+}
+
+.yt-comment-submit:hover:not(:disabled) {
+    background: #2a8fd6;
+}
+
+.yt-comment-submit:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--yt-spec-text-disabled);
+    cursor: not-allowed;
+}
+
+.yt-comment-signin {
+    padding: 24px 0;
+    color: var(--yt-spec-text-secondary);
+    font-size: 14px;
+}

@@ -1,0 +1,66 @@
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--yt-spec-base-background);
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+    background: var(--yt-spec-raised-background);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-header h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: var(--yt-spec-text-primary);
+    font-weight: 400;
+}
+
+.auth-header p {
+    color: var(--yt-spec-text-secondary);
+    margin: 0;
+    font-size: 14px;
+}
+
+.auth-form {
+    margin-bottom: 24px;
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.auth-footer {
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-footer p {
+    color: var(--yt-spec-text-secondary);
+    margin: 0;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: var(--yt-spec-call-to-action);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.auth-footer a:hover {
+    color: #2a8fd6;
+}
