@@ -1,82 +1,79 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { formatDuration, formatViewCount, formatUploadDate } from "@/lib/utils/upload";
+import Image from "next/image";
+import { formatViewCount, formatUploadDate, formatDuration } from "@/lib/utils/upload";
 
 interface VideoCardProps {
     id: string;
     title: string;
     channelName: string;
-    channelAvatar?: string;
     thumbnail: string;
     views: number;
     uploadDate: Date;
     duration: number;
+    channelId?: string;
 }
 
 export default function VideoCard({
     id,
     title,
     channelName,
-    channelAvatar,
     thumbnail,
     views,
     uploadDate,
     duration,
+    channelId,
 }: VideoCardProps) {
     return (
         <div className="yt-video-card">
             <Link href={`/watch/${id}`}>
-                <div className="yt-video-thumbnail group">
-                    <Image
-                        src={thumbnail || "/placeholder-video.jpg"}
-                        alt={title}
-                        width={320}
-                        height={180}
-                        className="w-full h-full object-cover"
-                    />
+                {/* Thumbnail */}
+                <div className="yt-video-thumbnail">
+                    {thumbnail ? (
+                        <Image
+                            src={thumbnail}
+                            alt={title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted">
+                            <span className="text-4xl">🎥</span>
+                        </div>
+                    )}
                     <div className="yt-duration-badge">
                         {formatDuration(duration)}
                     </div>
                 </div>
-            </Link>
-
-            <div className="flex gap-3 mt-3">
-                {/* Channel Avatar */}
-                <Link href={`/channel/${channelName}`}>
-                    <div className="yt-avatar w-9 h-9 flex-shrink-0">
-                        {channelAvatar ? (
-                            <Image
-                                src={channelAvatar}
-                                alt={channelName}
-                                width={36}
-                                height={36}
-                                className="rounded-full"
-                            />
-                        ) : (
-                            <span className="text-sm font-medium">
-                                {channelName.charAt(0).toUpperCase()}
-                            </span>
-                        )}
-                    </div>
-                </Link>
 
                 {/* Video Info */}
-                <div className="flex-1 min-w-0">
-                    <Link href={`/watch/${id}`}>
+                <div className="flex gap-3 mt-3">
+                    {/* Channel Avatar */}
+                    <Link
+                        href={channelId ? `/channel/${channelId}` : "#"}
+                        className="yt-avatar w-9 h-9 flex-shrink-0"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <span className="text-sm font-medium">
+                            {channelName.charAt(0).toUpperCase()}
+                        </span>
+                    </Link>
+
+                    {/* Title & Metadata */}
+                    <div className="flex-1 min-w-0">
                         <h3 className="yt-video-title mb-1">{title}</h3>
-                    </Link>
-
-                    <Link href={`/channel/${channelName}`}>
-                        <p className="yt-channel-name">{channelName}</p>
-                    </Link>
-
-                    <p className="yt-video-meta">
-                        {formatViewCount(views)} views • {formatUploadDate(uploadDate)}
-                    </p>
+                        <Link
+                            href={channelId ? `/channel/${channelId}` : "#"}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <p className="yt-channel-name">{channelName}</p>
+                        </Link>
+                        <p className="yt-video-meta">
+                            {formatViewCount(views)} views • {formatUploadDate(uploadDate)}
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </Link>
         </div>
     );
 }
