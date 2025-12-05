@@ -148,7 +148,7 @@ export async function getChannelAnalytics(
     const dailyMap = new Map<string, DailyMetrics>();
 
     analytics.forEach((record) => {
-        const dateKey = record.date.toISOString().split("T")[0];
+        const dateKey = record.date.toISOString().split("T")[0]!;
         const existing = dailyMap.get(dateKey) || {
             date: record.date,
             views: 0,
@@ -221,7 +221,7 @@ export async function getChannelAnalytics(
  */
 export async function incrementVideoMetric(
     videoId: string,
-    metric: "views" | "likes" | "dislikes" | "comments" | "shares",
+    metric: "views" | "likes" | "dislikes" | "comments" | "shares" | "uniqueViewers",
     value: number = 1
 ) {
     const today = new Date();
@@ -229,6 +229,7 @@ export async function incrementVideoMetric(
 
     const updateData: any = {};
     if (metric === "views") updateData.views = { increment: value };
+    else if (metric === "uniqueViewers") updateData.uniqueViewers = { increment: value };
     else if (metric === "likes") updateData.likes = { increment: value };
     else if (metric === "dislikes") updateData.dislikes = { increment: value };
     else if (metric === "comments") updateData.comments = { increment: value };
@@ -245,6 +246,7 @@ export async function incrementVideoMetric(
             videoId,
             date: today,
             views: metric === "views" ? value : 0,
+            uniqueViewers: metric === "uniqueViewers" ? value : 0,
             likes: metric === "likes" ? value : 0,
             dislikes: metric === "dislikes" ? value : 0,
             comments: metric === "comments" ? value : 0,

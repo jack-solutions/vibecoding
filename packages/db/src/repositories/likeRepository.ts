@@ -1,5 +1,6 @@
 import prisma from "../index";
 import type { LikeType } from "../../prisma/generated/client";
+import { incrementVideoMetric } from "./analyticsRepository";
 
 // ============================================
 // Types
@@ -86,6 +87,12 @@ export async function likeVideo(userProfileId: string, videoId: string) {
             },
         });
 
+        // Update analytics
+        Promise.all([
+            incrementVideoMetric(videoId, "likes", 1),
+            incrementVideoMetric(videoId, "dislikes", -1),
+        ]).catch(console.error);
+
         return { action: "changed", like };
     }
 
@@ -103,6 +110,9 @@ export async function likeVideo(userProfileId: string, videoId: string) {
         where: { id: videoId },
         data: { likeCount: { increment: 1 } },
     });
+
+    // Update analytics
+    incrementVideoMetric(videoId, "likes", 1).catch(console.error);
 
     return { action: "created", like };
 }
@@ -134,6 +144,12 @@ export async function dislikeVideo(userProfileId: string, videoId: string) {
             },
         });
 
+        // Update analytics
+        Promise.all([
+            incrementVideoMetric(videoId, "likes", -1),
+            incrementVideoMetric(videoId, "dislikes", 1),
+        ]).catch(console.error);
+
         return { action: "changed", like };
     }
 
@@ -151,6 +167,9 @@ export async function dislikeVideo(userProfileId: string, videoId: string) {
         where: { id: videoId },
         data: { dislikeCount: { increment: 1 } },
     });
+
+    // Update analytics
+    incrementVideoMetric(videoId, "dislikes", 1).catch(console.error);
 
     return { action: "created", like };
 }
@@ -182,6 +201,9 @@ export async function removeLike(userProfileId: string, videoId: string) {
             data: { dislikeCount: { decrement: 1 } },
         });
     }
+
+    // Update analytics
+    incrementVideoMetric(videoId, existingLike.type === "LIKE" ? "likes" : "dislikes", -1).catch(console.error);
 
     return { action: "removed", previousType: existingLike.type };
 }

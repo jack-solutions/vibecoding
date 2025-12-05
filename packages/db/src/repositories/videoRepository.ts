@@ -3,6 +3,7 @@ import type {
     VideoVisibility,
     VideoProcessStatus,
 } from "../../prisma/generated/client";
+import { incrementVideoMetric, updateWatchMetrics } from "./analyticsRepository";
 
 // ============================================
 // Types
@@ -400,6 +401,44 @@ export async function recordView(
             userAgent: data.userAgent,
         },
     });
+
+    // Update analytics
+    const analyticsPromises = [
+        updateWatchMetrics(videoId, data.watchDuration || 0),
+        incrementVideoMetric(videoId, "views", 1),
+    ];
+
+    // Check for unique viewer increment (fire and forget)
+    // Logic: If this is the FIRST view for this user/IP today, increment uniqueViewers
+    (async () => {
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const whereDailyView: any = {
+                videoId,
+                watchedAt: { gte: today },
+            };
+
+            if (data.userProfileId) {
+                whereDailyView.userProfileId = data.userProfileId;
+            } else if (data.ipAddress) {
+                whereDailyView.ipAddress = data.ipAddress;
+            } else {
+                return; // Can't track uniqueness
+            }
+
+            const viewsToday = await prisma.view.count({ where: whereDailyView });
+
+            if (viewsToday === 1) {
+                analyticsPromises.push(incrementVideoMetric(videoId, "uniqueViewers", 1));
+            }
+
+            await Promise.all(analyticsPromises);
+        } catch (error) {
+            console.error("Analytics update error:", error);
+        }
+    })();
 
     // Increment view count on video
     await incrementViewCount(videoId);

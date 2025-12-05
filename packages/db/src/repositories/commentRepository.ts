@@ -1,4 +1,5 @@
 import prisma from "../index";
+import { incrementVideoMetric } from "./analyticsRepository";
 
 // ============================================
 // Types
@@ -115,6 +116,9 @@ export async function createComment(input: CreateCommentInput) {
         data: { commentCount: { increment: 1 } },
     });
 
+    // Update analytics
+    incrementVideoMetric(input.videoId, "comments", 1).catch(console.error);
+
     // Update parent comment reply count if it's a reply
     if (input.parentCommentId) {
         await prisma.comment.update({
@@ -196,6 +200,9 @@ export async function deleteComment(commentId: string) {
             });
         }
     });
+
+    // Update analytics (decrement by total deleted: 1 + replies)
+    incrementVideoMetric(comment.videoId, "comments", -(1 + comment.replyCount)).catch(console.error);
 }
 
 /**
