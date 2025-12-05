@@ -11,7 +11,8 @@
   "type": "module",
   "scripts": {},
   "devDependencies": {
-    "@vc-yt-clone/config": "workspace:*"
+    "@vc-yt-clone/config": "workspace:*",
+    "@types/express": "^5.0.0"
   },
   "peerDependencies": {
     "typescript": "^5"

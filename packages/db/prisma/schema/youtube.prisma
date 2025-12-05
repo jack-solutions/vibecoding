@@ -1,0 +1,488 @@
+// ============================================
+// YouTube Clone Models
+// ============================================
+
+// ============================================
+// Enums
+// ============================================
+
+enum UserRole {
+  VIEWER
+  CREATOR
+  ADMIN
+  ADVERTISER
+}
+
+enum VideoVisibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
+enum VideoProcessStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum LikeType {
+  LIKE
+  DISLIKE
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  HATE_SPEECH
+  VIOLENCE
+  SEXUAL_CONTENT
+  MISINFORMATION
+  COPYRIGHT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportTargetType {
+  VIDEO
+  COMMENT
+  CHANNEL
+}
+
+enum AdCampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// User Profile Extension (extends auth User)
+// ============================================
+
+model UserProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Role and permissions
+  role      UserRole @default(VIEWER)
+  
+  // Profile fields
+  bio       String?
+  avatar    String?
+  banner    String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  channel       Channel?
+  comments      Comment[]
+  likes         Like[]
+  views         View[]
+  playlists     Playlist[]
+  subscriptions Subscription[] @relation("Subscriber")
+  reports       Report[]       @relation("Reporter")
+  reviewedReports Report[]     @relation("Reviewer")
+  adCampaigns   AdCampaign[]
+  
+  @@index([userId])
+  @@index([role])
+  @@map("user_profile")
+}
+
+// ============================================
+// Channel
+// ============================================
+
+model Channel {
+  id              String   @id @default(cuid())
+  userProfileId   String   @unique
+  userProfile     UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  
+  // Channel info
+  name            String
+  handle          String   @unique
+  description     String?
+  
+  // Branding
+  avatar          String?
+  banner          String?
+  
+  // Stats (denormalized for performance)
+  subscriberCount Int      @default(0)
+  totalViews      Int      @default(0)
+  videoCount      Int      @default(0)
+  
+  // Status
+  verified        Boolean  @default(false)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  videos          Video[]
+  subscribers     Subscription[]
+  reports         Report[]
+  
+  @@index([handle])
+  @@index([createdAt])
+  @@map("channel")
+}
+
+// ============================================
+// Video
+// ============================================
+
+model Video {
+  id              String           @id @default(cuid())
+  channelId       String
+  channel         Channel          @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  
+  // Basic info
+  title           String
+  description     String?
+  
+  // Media URLs
+  videoUrl        String?
+  thumbnailUrl    String?
+  
+  // Video metadata
+  duration        Int              @default(0) // in seconds
+  
+  // Visibility and processing
+  visibility      VideoVisibility  @default(PRIVATE)
+  processStatus   VideoProcessStatus @default(PENDING)
+  
+  // Stats (denormalized for performance)
+  viewCount       Int              @default(0)
+  likeCount       Int              @default(0)
+  dislikeCount    Int              @default(0)
+  commentCount    Int              @default(0)
+  
+  // Categorization
+  category        String?
+  tags            String?          // Comma-separated tags
+  
+  // Timestamps
+  uploadedAt      DateTime         @default(now())
+  publishedAt     DateTime?
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  comments        Comment[]
+  likes           Like[]
+  views           View[]
+  playlistVideos  PlaylistVideo[]
+  analytics       VideoAnalytics[]
+  reports         Report[]
+  
+  @@index([channelId])
+  @@index([visibility])
+  @@index([uploadedAt])
+  @@index([category])
+  @@index([processStatus])
+  @@map("video")
+}
+
+// ============================================
+// Comment
+// ============================================
+
+model Comment {
+  id              String   @id @default(cuid())
+  videoId         String
+  video           Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userProfileId   String
+  userProfile     UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  
+  // Parent comment for replies
+  parentCommentId String?
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("CommentReplies")
+  
+  // Content
+  content         String
+  
+  // Stats
+  likeCount       Int      @default(0)
+  replyCount      Int      @default(0)
+  
+  // Status
+  isEdited        Boolean  @default(false)
+  isPinned        Boolean  @default(false)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  reports         Report[]
+  
+  @@index([videoId])
+  @@index([userProfileId])
+  @@index([parentCommentId])
+  @@index([createdAt])
+  @@map("comment")
+}
+
+// ============================================
+// Subscription
+// ============================================
+
+model Subscription {
+  id                   String      @id @default(cuid())
+  subscriberId         String
+  subscriber           UserProfile @relation("Subscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  channelId            String
+  channel              Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  
+  // Notification preference
+  notificationsEnabled Boolean     @default(true)
+  
+  // Timestamps
+  createdAt            DateTime    @default(now())
+  
+  @@unique([subscriberId, channelId])
+  @@index([subscriberId])
+  @@index([channelId])
+  @@map("subscription")
+}
+
+// ============================================
+// Like / Dislike
+// ============================================
+
+model Like {
+  id            String      @id @default(cuid())
+  userProfileId String
+  userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  videoId       String
+  video         Video       @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Like or Dislike
+  type          LikeType
+  
+  // Timestamps
+  createdAt     DateTime    @default(now())
+  
+  @@unique([userProfileId, videoId])
+  @@index([userProfileId])
+  @@index([videoId])
+  @@index([type])
+  @@map("like")
+}
+
+// ============================================
+// View / Watch History
+// ============================================
+
+model View {
+  id              String       @id @default(cuid())
+  videoId         String
+  video           Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userProfileId   String?      // Nullable for guest views
+  userProfile     UserProfile? @relation(fields: [userProfileId], references: [id], onDelete: SetNull)
+  
+  // Watch data
+  watchDuration   Int          @default(0) // in seconds
+  watchPercentage Float        @default(0) // 0-100
+  
+  // Session tracking
+  ipAddress       String?
+  userAgent       String?
+  
+  // Timestamps
+  watchedAt       DateTime     @default(now())
+  
+  @@index([videoId])
+  @@index([userProfileId])
+  @@index([watchedAt])
+  @@map("view")
+}
+
+// ============================================
+// Playlist
+// ============================================
+
+model Playlist {
+  id              String          @id @default(cuid())
+  userProfileId   String
+  userProfile     UserProfile     @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  
+  // Playlist info
+  name            String
+  description     String?
+  
+  // Visibility
+  visibility      VideoVisibility @default(PRIVATE)
+  
+  // Stats
+  videoCount      Int             @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  videos          PlaylistVideo[]
+  
+  @@index([userProfileId])
+  @@index([visibility])
+  @@map("playlist")
+}
+
+// ============================================
+// Playlist Video (Junction Table)
+// ============================================
+
+model PlaylistVideo {
+  id         String   @id @default(cuid())
+  playlistId String
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  videoId    String
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Order in playlist
+  position   Int
+  
+  // Timestamps
+  addedAt    DateTime @default(now())
+  
+  @@unique([playlistId, videoId])
+  @@index([playlistId])
+  @@index([videoId])
+  @@map("playlist_video")
+}
+
+// ============================================
+// Video Analytics
+// ============================================
+
+model VideoAnalytics {
+  id                String   @id @default(cuid())
+  videoId           String
+  video             Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Date for aggregation (stored as DateTime, use date portion for grouping)
+  date              DateTime
+  
+  // View metrics
+  views             Int      @default(0)
+  uniqueViewers     Int      @default(0)
+  
+  // Watch metrics
+  totalWatchTime    Int      @default(0) // in seconds
+  averageWatchTime  Float    @default(0) // in seconds
+  
+  // Engagement metrics
+  likes             Int      @default(0)
+  dislikes          Int      @default(0)
+  comments          Int      @default(0)
+  shares            Int      @default(0)
+  
+  // Discovery metrics
+  impressions       Int      @default(0)
+  clickThroughRate  Float    @default(0) // percentage
+  
+  // Demographics (stored as JSON string for SQLite)
+  demographics      String?  // JSON: { ageGroups: {}, genders: {}, locations: {} }
+  
+  @@unique([videoId, date])
+  @@index([videoId])
+  @@index([date])
+  @@map("video_analytics")
+}
+
+// ============================================
+// Report
+// ============================================
+
+model Report {
+  id              String           @id @default(cuid())
+  reporterId      String
+  reporter        UserProfile      @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  
+  // Target type and ID
+  targetType      ReportTargetType
+  
+  // Specific target relations (one will be set based on targetType)
+  videoId         String?
+  video           Video?           @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  commentId       String?
+  comment         Comment?         @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  channelId       String?
+  channel         Channel?         @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  
+  // Report details
+  reason          ReportReason
+  description     String?
+  
+  // Status and resolution
+  status          ReportStatus     @default(PENDING)
+  reviewerId      String?
+  reviewer        UserProfile?     @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewNotes     String?
+  
+  // Timestamps
+  createdAt       DateTime         @default(now())
+  resolvedAt      DateTime?
+  
+  @@index([reporterId])
+  @@index([targetType])
+  @@index([status])
+  @@index([createdAt])
+  @@map("report")
+}
+
+// ============================================
+// Ad Campaign (Advertiser Feature)
+// ============================================
+
+model AdCampaign {
+  id              String           @id @default(cuid())
+  advertiserId    String
+  advertiser      UserProfile      @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  
+  // Campaign info
+  name            String
+  description     String?
+  
+  // Budget and pricing
+  budget          Float            @default(0)
+  spent           Float            @default(0)
+  
+  // Status
+  status          AdCampaignStatus @default(DRAFT)
+  
+  // Schedule
+  startDate       DateTime?
+  endDate         DateTime?
+  
+  // Targeting (stored as JSON string for SQLite)
+  targetAudience  String?          // JSON: { ageRange: [], genders: [], locations: [], interests: [] }
+  
+  // Metrics
+  impressions     Int              @default(0)
+  clicks          Int              @default(0)
+  
+  // Timestamps
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([advertiserId])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+  @@map("ad_campaign")
+}

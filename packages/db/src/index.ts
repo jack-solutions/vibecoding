@@ -9,3 +9,9 @@ const adapter = new PrismaLibSql({
 const prisma = new PrismaClient({ adapter });
 
 export default prisma;
+
+// Export repositories
+export * from "./repositories";
+
+// Re-export Prisma types for convenience
+export type { UserRole, VideoVisibility, LikeType } from "../prisma/generated/client";
