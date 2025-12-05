@@ -1,0 +1,80 @@
+:root {
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #0f0f0f;
+  --bg-hover: #272727;
+  --text-primary: #f1f1f1;
+  --text-secondary: #aaaaaa;
+  --accent: #3ea6ff;
+  --border: #303030;
+  --header-height: 56px;
+  --sidebar-width: 240px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #717171;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  margin-top: var(--header-height);
+}
+
+.content-area {
+  flex: 1;
+  padding: 24px;
+  background-color: var(--bg-primary);
+  overflow-y: auto;
+  margin-left: var(--sidebar-width);
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    margin-left: 72px; /* Collapsed sidebar width */
+  }
+}
