@@ -1,87 +1,284 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    /* Light Theme (YouTube Light Mode) */
+    --background: 0 0% 100%; /* #ffffff */
+    --foreground: 0 0% 5.9%; /* #0f0f0f */
+    
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 0 0% 5.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 5.9%;
+    
+    --primary: 0 0% 5.9%;
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 0 0% 96.1%; /* #f5f5f5 */
+    --secondary-foreground: 0 0% 5.9%;
+    
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%; /* #717171 */
+    
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 5.9%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 89.8%; /* #e5e5e5 */
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    
+    --radius: 0rem;
+  }
+  
+  .dark {
+    /* Dark Theme (YouTube Dark Mode) */
+    --background: 0 0% 5.9%; /* #0f0f0f */
+    --foreground: 0 0% 100%; /* #ffffff */
+    
+    --card: 0 0% 12.9%; /* #212121 */
+    --card-foreground: 0 0% 100%;
+    
+    --popover: 0 0% 18.8%; /* #303030 */
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 5.9%;
+    
+    --secondary: 0 0% 18.8%; /* #303030 */
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 0 0% 18.8%;
+    --muted-foreground: 0 0% 66.7%; /* #aaaaaa */
+    
+    --accent: 0 0% 18.8%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 18.8%; /* #303030 */
+    --input: 0 0% 12.9%;
+    --ring: 0 0% 83.1%;
+  }
 
-body {
-  font-family: 'Roboto', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Roboto', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 @layer components {
-  .auth-container {
-    @apply min-h-screen flex items-center justify-center bg-white px-4 py-8;
+  /* Header */
+  .yt-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: 3.5rem;
+    border-bottom: 1px solid;
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--border));
   }
 
-  .auth-card {
-    @apply w-full max-w-md bg-white border border-gray-200 rounded-lg p-8 shadow-sm;
+  /* Sidebar */
+  .yt-sidebar {
+    position: fixed;
+    left: 0;
+    top: 3.5rem;
+    bottom: 0;
+    overflow-y: auto;
+    border-right: 1px solid;
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--border));
   }
 
-  .auth-logo {
-    @apply flex items-center justify-center mb-6;
+  .yt-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .yt-sidebar-item:hover {
+    background-color: hsl(var(--accent));
   }
 
-  .auth-title {
-    @apply text-2xl font-normal text-center mb-2 text-gray-900;
+  .yt-sidebar-item-active {
+    background-color: hsl(var(--accent));
+    font-weight: 500;
   }
 
-  .auth-subtitle {
-    @apply text-sm text-center mb-6 text-gray-600;
+  /* Video cards */
+  .yt-video-card {
+    cursor: pointer;
   }
 
-  .form-group {
-    @apply mb-4;
+  .yt-video-thumbnail {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background-color: hsl(var(--muted));
   }
 
-  .form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  .yt-video-thumbnail:hover img {
+    transform: scale(1.05);
   }
 
-  .form-input {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base;
+  .yt-video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
   }
 
-  .form-input-error {
-    @apply border-red-500 focus:ring-red-500;
+  .yt-duration-badge {
+    position: absolute;
+    bottom: 0.25rem;
+    right: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
   }
 
-  .form-select {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-base bg-white cursor-pointer;
+  /* Avatar */
+  .yt-avatar {
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(var(--muted));
   }
 
-  .error-message {
-    @apply text-sm text-red-600 mt-1.5;
+  /* Icon button */
+  .yt-icon-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+  }
+  
+  .yt-icon-button:hover {
+    background-color: hsl(var(--accent));
   }
 
-  .btn-primary {
-    @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  /* Search bar */
+  .yt-search-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 42rem;
+    margin: 0 auto;
   }
 
-  .btn-secondary {
-    @apply w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-3 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  .yt-search-input {
+    flex: 1;
+    background-color: transparent;
+    border: 1px solid;
+    border-radius: 9999px 0 0 9999px;
+    padding: 0.5rem 1rem;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+  }
+  
+  .yt-search-input::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .yt-search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
   }
 
-  .auth-link {
-    @apply text-blue-600 hover:underline font-medium;
+  .yt-search-button {
+    border: 1px solid;
+    border-left: 0;
+    border-radius: 0 9999px 9999px 0;
+    padding: 0.5rem 1.5rem;
+    transition: background-color 0.2s;
+    background-color: hsl(var(--muted));
+    border-color: hsl(var(--border));
+  }
+  
+  .yt-search-button:hover {
+    background-color: hsl(var(--accent));
   }
 
-  .divider {
-    @apply flex items-center my-6;
+  /* Filter chips */
+  .yt-chip {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    white-space: nowrap;
+    background-color: hsl(var(--muted));
+  }
+  
+  .yt-chip:hover {
+    background-color: hsl(var(--accent));
+  }
+  
+  .yt-chip-active {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+  
+  .yt-chip-active:hover {
+    opacity: 0.9;
   }
 
-  .divider-line {
-    @apply flex-1 border-t border-gray-300;
+  /* Video metadata */
+  .yt-video-title {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: hsl(var(--foreground));
   }
 
-  .divider-text {
-    @apply px-4 text-sm text-gray-500;
+  .yt-channel-name {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    cursor: pointer;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .yt-channel-name:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .yt-video-meta {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: hsl(var(--muted-foreground));
   }
 }

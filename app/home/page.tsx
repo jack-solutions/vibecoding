@@ -1,259 +1,219 @@
 "use client";
 
-import { useCurrentUser, useLogout } from "@/lib/auth/hooks";
-import Link from "next/link";
+import { useState } from "react";
+import YouTubeHeader from "@/components/layout/Header";
+import YouTubeSidebar from "@/components/layout/Sidebar";
+import FilterChips from "@/components/layout/FilterChips";
+import VideoCard from "@/components/video/VideoCard";
+
+// Realistic dummy data with real images from Unsplash
+const mockVideos = [
+    {
+        id: "1",
+        title: "Building a Full Stack App with Next.js 14 - Complete Tutorial",
+        channelName: "Web Dev Simplified",
+        thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=225&fit=crop",
+        views: 245000,
+        uploadDate: new Date("2024-11-20"),
+        duration: 1847, // 30:47
+    },
+    {
+        id: "2",
+        title: "10 JavaScript Tips Every Developer Should Know",
+        channelName: "Fireship",
+        thumbnail: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=400&h=225&fit=crop",
+        views: 892000,
+        uploadDate: new Date("2024-11-25"),
+        duration: 623, // 10:23
+    },
+    {
+        id: "3",
+        title: "React Server Components Explained in 100 Seconds",
+        channelName: "Fireship",
+        thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=400&h=225&fit=crop",
+        views: 567000,
+        uploadDate: new Date("2024-12-01"),
+        duration: 102, // 1:42
+    },
+    {
+        id: "4",
+        title: "CSS Grid vs Flexbox - When to Use Each One?",
+        channelName: "Kevin Powell",
+        thumbnail: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=400&h=225&fit=crop",
+        views: 423000,
+        uploadDate: new Date("2024-11-28"),
+        duration: 1245, // 20:45
+    },
+    {
+        id: "5",
+        title: "I Built a YouTube Clone in 24 Hours - Here's What I Learned",
+        channelName: "Theo - t3.gg",
+        thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=225&fit=crop",
+        views: 178000,
+        uploadDate: new Date("2024-12-02"),
+        duration: 2156, // 35:56
+    },
+    {
+        id: "6",
+        title: "TypeScript 5.0 - New Features Explained",
+        channelName: "Matt Pocock",
+        thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=225&fit=crop",
+        views: 312000,
+        uploadDate: new Date("2024-11-22"),
+        duration: 892, // 14:52
+    },
+    {
+        id: "7",
+        title: "Master Tailwind CSS in 2024 - Complete Course",
+        channelName: "Traversy Media",
+        thumbnail: "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?w=400&h=225&fit=crop",
+        views: 654000,
+        uploadDate: new Date("2024-11-18"),
+        duration: 3421, // 57:01
+    },
+    {
+        id: "8",
+        title: "Understanding React Hooks - useEffect Deep Dive",
+        channelName: "Jack Herrington",
+        thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=225&fit=crop",
+        views: 234000,
+        uploadDate: new Date("2024-11-30"),
+        duration: 1534, // 25:34
+    },
+    {
+        id: "9",
+        title: "My Coding Setup 2024 - Mac Studio + Gear Tour",
+        channelName: "ThePrimeagen",
+        thumbnail: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=400&h=225&fit=crop",
+        views: 445000,
+        uploadDate: new Date("2024-12-03"),
+        duration: 945, // 15:45
+    },
+    {
+        id: "10",
+        title: "Database Design Mistakes You Should Avoid",
+        channelName: "ByteByteGo",
+        thumbnail: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=225&fit=crop",
+        views: 189000,
+        uploadDate: new Date("2024-11-26"),
+        duration: 678, // 11:18
+    },
+    {
+        id: "11",
+        title: "Python for Beginners - Full Course 2024",
+        channelName: "Programming with Mosh",
+        thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=225&fit=crop",
+        views: 1200000,
+        uploadDate: new Date("2024-11-15"),
+        duration: 7234, // 2:00:34
+    },
+    {
+        id: "12",
+        title: "Stop Using console.log() - Try This Instead",
+        channelName: "Web Dev Simplified",
+        thumbnail: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=225&fit=crop",
+        views: 567000,
+        uploadDate: new Date("2024-11-29"),
+        duration: 534, // 8:54
+    },
+    {
+        id: "13",
+        title: "How I Would Learn Web Development in 2024",
+        channelName: "CodeWithChris",
+        thumbnail: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=225&fit=crop",
+        views: 823000,
+        uploadDate: new Date("2024-11-21"),
+        duration: 1876, // 31:16
+    },
+    {
+        id: "14",
+        title: "Docker Crash Course for Absolute Beginners",
+        channelName: "TechWorld with Nana",
+        thumbnail: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=400&h=225&fit=crop",
+        views: 445000,
+        uploadDate: new Date("2024-11-24"),
+        duration: 2345, // 39:05
+    },
+    {
+        id: "15",
+        title: "Building Real-Time Chat with WebSockets",
+        channelName: "Traversy Media",
+        thumbnail: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=225&fit=crop",
+        views: 298000,
+        uploadDate: new Date("2024-12-01"),
+        duration: 1923, // 32:03
+    },
+    {
+        id: "16",
+        title: "AWS vs Azure vs Google Cloud - Which One to Choose?",
+        channelName: "TechLead",
+        thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=225&fit=crop",
+        views: 678000,
+        uploadDate: new Date("2024-11-19"),
+        duration: 1234, // 20:34
+    },
+    {
+        id: "17",
+        title: "Advanced Git Techniques You Should Know",
+        channelName: "Fireship",
+        thumbnail: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=400&h=225&fit=crop",
+        views: 534000,
+        uploadDate: new Date("2024-11-27"),
+        duration: 456, // 7:36
+    },
+    {
+        id: "18",
+        title: "API Design Best Practices - REST vs GraphQL",
+        channelName: "Hussein Nasser",
+        thumbnail: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=225&fit=crop",
+        views: 267000,
+        uploadDate: new Date("2024-11-23"),
+        duration: 1678, // 27:58
+    },
+    {
+        id: "19",
+        title: "My Morning Routine as a Software Engineer",
+        channelName: "Forrest Knight",
+        thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=225&fit=crop",
+        views: 156000,
+        uploadDate: new Date("2024-12-04"),
+        duration: 723, // 12:03
+    },
+    {
+        id: "20",
+        title: "JavaScript Array Methods Explained - Map, Filter, Reduce",
+        channelName: "Ania Kubów",
+        thumbnail: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&h=225&fit=crop",
+        views: 412000,
+        uploadDate: new Date("2024-11-17"),
+        duration: 1456, // 24:16
+    },
+];
 
 export default function HomePage() {
-    const { user, loading } = useCurrentUser();
-    const logout = useLogout();
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading...</p>
-                </div>
-            </div>
-        );
-    }
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState("All");
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center space-x-8">
-                            <svg
-                                width="90"
-                                height="20"
-                                viewBox="0 0 90 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 0 14.285 0 14.285 0C14.285 0 5.35042 0 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C0 5.35042 0 10 0 10C0 10 0 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z"
-                                    fill="#FF0000"
-                                />
-                                <path
-                                    d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z"
-                                    fill="white"
-                                />
-                            </svg>
-                            <span className="text-xl font-semibold text-gray-900">YouTube Clone</span>
-                        </div>
+        <div className="min-h-screen">
+            <YouTubeHeader onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
-                        <div className="flex items-center space-x-4">
-                            {user?.isAuthenticated ? (
-                                <>
-                                    {user.role === "creator" && (
-                                        <Link
-                                            href="/upload"
-                                            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                        >
-                                            Upload
-                                        </Link>
-                                    )}
-                                    {user.role === "advertiser" && (
-                                        <Link
-                                            href="/ads"
-                                            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                        >
-                                            Ads Manager
-                                        </Link>
-                                    )}
-                                    {user.role === "admin" && (
-                                        <Link
-                                            href="/admin"
-                                            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                        >
-                                            Admin
-                                        </Link>
-                                    )}
-                                    <button
-                                        onClick={logout}
-                                        className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
-                                    >
-                                        Logout
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <Link
-                                        href="/login"
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                    >
-                                        Sign in
-                                    </Link>
-                                    <Link
-                                        href="/register"
-                                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-                                    >
-                                        Create account
-                                    </Link>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <div className="hidden lg:block">
+                <YouTubeSidebar collapsed={sidebarCollapsed} />
+            </div>
 
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Welcome to YouTube Clone
-                    </h1>
-                    {user?.isAuthenticated ? (
-                        <p className="text-lg text-gray-600">
-                            Hello, <span className="font-semibold">{user.name}</span>! You're logged in as a{" "}
-                            <span className="font-semibold capitalize">{user.role}</span>.
-                        </p>
-                    ) : (
-                        <p className="text-lg text-gray-600">
-                            Please sign in to access all features.
-                        </p>
-                    )}
-                </div>
+            <main className={`pt-14 transition-all duration-200 ${sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-60"
+                }`}>
+                {/* Filter Chips */}
+                <FilterChips selected={selectedFilter} onSelect={setSelectedFilter} />
 
-                {/* Role-based content */}
-                {user?.isAuthenticated && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                Your Profile
-                            </h3>
-                            <div className="space-y-2 text-sm text-gray-600">
-                                <p><span className="font-medium">Email:</span> {user.email}</p>
-                                <p><span className="font-medium">Role:</span> {user.role}</p>
-                                {user.channelId && (
-                                    <p><span className="font-medium">Channel:</span> Created ✓</p>
-                                )}
-                            </div>
-                        </div>
-
-                        {user.role === "creator" && (
-                            <div className="bg-blue-50 rounded-lg shadow-sm p-6 border border-blue-200">
-                                <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                                    Creator Tools
-                                </h3>
-                                <p className="text-sm text-blue-700 mb-4">
-                                    You have access to video upload and channel management.
-                                </p>
-                                <Link
-                                    href="/upload"
-                                    className="inline-block px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-                                >
-                                    Go to Upload
-                                </Link>
-                            </div>
-                        )}
-
-                        {user.role === "advertiser" && (
-                            <div className="bg-green-50 rounded-lg shadow-sm p-6 border border-green-200">
-                                <h3 className="text-lg font-semibold text-green-900 mb-2">
-                                    Advertiser Tools
-                                </h3>
-                                <p className="text-sm text-green-700 mb-4">
-                                    Manage your advertising campaigns and analytics.
-                                </p>
-                                <Link
-                                    href="/ads"
-                                    className="inline-block px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
-                                >
-                                    Go to Ads Manager
-                                </Link>
-                            </div>
-                        )}
-
-                        {user.role === "admin" && (
-                            <div className="bg-purple-50 rounded-lg shadow-sm p-6 border border-purple-200">
-                                <h3 className="text-lg font-semibold text-purple-900 mb-2">
-                                    Admin Tools
-                                </h3>
-                                <p className="text-sm text-purple-700 mb-4">
-                                    Access platform management and analytics.
-                                </p>
-                                <Link
-                                    href="/admin"
-                                    className="inline-block px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md hover:bg-purple-700 transition-colors"
-                                >
-                                    Go to Dashboard
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Features showcase */}
-                <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                        Phase 2: Authentication Complete ✅
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                                Implemented Features
-                            </h3>
-                            <ul className="space-y-2 text-sm text-gray-600">
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">✓</span>
-                                    User registration with role selection
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">✓</span>
-                                    JWT authentication with secure cookies
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">✓</span>
-                                    Role-based access control
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">✓</span>
-                                    Auto-channel creation for creators
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">✓</span>
-                                    Protected routes with middleware
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">✓</span>
-                                    YouTube-inspired responsive UI
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                                Available Roles
-                            </h3>
-                            <ul className="space-y-2 text-sm text-gray-600">
-                                <li className="flex items-start">
-                                    <span className="text-blue-600 mr-2">👁</span>
-                                    <div>
-                                        <span className="font-medium">Viewer:</span> Watch and enjoy videos
-                                    </div>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-red-600 mr-2">🎥</span>
-                                    <div>
-                                        <span className="font-medium">Creator:</span> Upload and manage videos
-                                    </div>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-green-600 mr-2">📊</span>
-                                    <div>
-                                        <span className="font-medium">Advertiser:</span> Run ad campaigns
-                                    </div>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-purple-600 mr-2">⚙️</span>
-                                    <div>
-                                        <span className="font-medium">Admin:</span> Platform management
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
+                {/* Video Grid */}
+                <div className="p-4 md:p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10">
+                        {mockVideos.map((video) => (
+                            <VideoCard key={video.id} {...video} />
+                        ))}
                     </div>
                 </div>
             </main>

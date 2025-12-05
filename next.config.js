@@ -2,8 +2,13 @@
 const nextConfig = {
     images: {
         domains: ['localhost'],
-        // Add your CDN or S3 domains here later
-    }
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '**',
+            },
+        ],
+    },
 };
 
 module.exports = nextConfig;
