@@ -14,6 +14,7 @@ router.post("/upload", upload.single("video"), async (req, res) => {
   res.json(video);
 });
 
+
 router.get("/", async (req, res) => {
   const videos = await Video.find({});
   res.json(videos);
